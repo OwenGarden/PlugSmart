@@ -23,6 +23,7 @@ Branch for marking: main
 **Generative AI usage statement**
 I acknowledge use of Claude (Anthropic) from https://claude.ai to help me complete my assessment in the following ways:
 
-To help me generate ideas and/or potential topics for my assessment.
-To help me create a structured outline for my assessment.
-To help in the following ways not covered by the above: setting up the Android Studio project and Git/GitHub
+- To help me generate ideas and/or potential topics for my assessment.
+- To help me create a structured outline for my assessment.
+- To help setting up the Android Studio project and ensuring I was able to commit and push to GitHub
+- I created fake price data for testing, and with the help of Claude scoped out the design of the app, and generated the code for the Today screen, colour theme and dark mode toggle.
