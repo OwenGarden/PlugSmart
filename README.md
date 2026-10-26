@@ -3,8 +3,11 @@
 An Android app that shows the cheapest times of day to use electricity, such as charging an electric car or running the washing machine. It uses half-hourly prices from the Octopus Energy Agile API.
 
 Developer: Owen Garden
+
 Student ID: 2309802
+
 Module: CM3147 Native Mobile Apps
+
 Branch for marking: main
 
 **Documentation**
