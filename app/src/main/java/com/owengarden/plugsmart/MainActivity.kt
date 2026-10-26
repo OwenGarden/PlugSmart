@@ -1,4 +1,4 @@
-package com.example.owengarden
+package com.owengarden.plugsmart
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.owengarden.ui.theme.PlugSmartTheme
+import com.owengarden.plugsmart.ui.theme.PlugSmartTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

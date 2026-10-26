@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.owengarden"
+    namespace = "com.owengarden.plugsmart"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.owengarden"
+        applicationId = "com.owengarden.plugsmart"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

@@ -1,4 +1,4 @@
-package com.example.owengarden.ui.theme
+package com.owengarden.plugsmart.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

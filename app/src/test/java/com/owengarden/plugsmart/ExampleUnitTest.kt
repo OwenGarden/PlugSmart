@@ -1,4 +1,4 @@
-package com.example.owengarden
+package com.owengarden.plugsmart
 
 import org.junit.Test
 
