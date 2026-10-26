@@ -21,6 +21,7 @@ Branch for marking: main
 - Run the app configuration on an emulator or device (internet connection needed for live prices).
 
 **Generative AI usage statement**
+
 I acknowledge use of Claude (Anthropic) from https://claude.ai to help me complete my assessment in the following ways:
 
 - To help me generate ideas and/or potential topics for my assessment.
