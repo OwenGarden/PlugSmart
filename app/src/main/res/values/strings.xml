@@ -1,3 +1,42 @@
 <resources>
     <string name="app_name">PlugSmart</string>
+
+    <!-- Top bar -->
+    <string name="switch_to_dark">Switch to dark mode</string>
+    <string name="switch_to_light">Switch to light mode</string>
+
+    <!-- Right now card -->
+    <string name="now_label">Right now · %1$s – %2$s</string>
+    <string name="per_kwh">per kWh</string>
+    <string name="advice_cheap">Good time to plug in</string>
+    <string name="advice_normal">Okay, but not the cheapest</string>
+    <string name="advice_expensive">Expensive – wait if you can</string>
+    <string name="cheaper_from">Cheapest from %1$s</string>
+
+    <!-- Best time card -->
+    <string name="best_title">Best 3 hours left today</string>
+    <string name="best_details">Average %1$.1fp/kWh</string>
+    <string name="saving">%1$d%% cheaper than today\'s average</string>
+    <string name="best_examples">Good for the washing machine, dishwasher or charging an electric car</string>
+    <string name="no_window">No more prices for today. Tomorrow\'s prices arrive around 4pm.</string>
+
+    <!-- Chart -->
+    <string name="chart_title">Today at a glance</string>
+    <string name="chart_description">Bar chart of today\'s half-hourly electricity prices, coloured cheap, normal or expensive</string>
+    <string name="legend_now">Now</string>
+    <string name="average_today">Today\'s average: %1$.1fp/kWh</string>
+
+    <!-- List -->
+    <string name="coming_up">Coming up today</string>
+    <string name="cheap_only">Only show cheap times</string>
+    <string name="no_cheap_left">No cheap times left today</string>
+    <string name="no_slots_left">No more prices for today</string>
+    <string name="now_level">Now · %1$s</string>
+
+    <!-- Shared -->
+    <string name="time_range">%1$s – %2$s</string>
+    <string name="price_pence">%1$.1fp</string>
+    <string name="level_cheap">Cheap</string>
+    <string name="level_normal">Normal</string>
+    <string name="level_expensive">Expensive</string>
 </resources>
