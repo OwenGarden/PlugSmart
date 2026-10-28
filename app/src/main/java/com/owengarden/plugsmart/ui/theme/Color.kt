@@ -34,6 +34,6 @@ val DarkSurfaceHighest = Color(0xFF303635)
 val DarkOutline = Color(0xFF899390)
 
 // ---- Price level "traffic light" colours (same in both themes) ----
-val CheapGreen = Color(0xFF2E7D32)
+val CheapGreen = Color(0xFF00C853) // bright so cheap times stand out
 val NormalAmber = Color(0xFFF9A825)
 val ExpensiveRed = Color(0xFFC62828)

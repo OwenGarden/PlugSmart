@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,11 +23,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            // Starts with the phone's own setting. rememberSaveable keeps the choice
-            // when the screen rotates. (It resets when the app is closed - saving it
-            // permanently is a later improvement.)
-            val systemDark = isSystemInDarkTheme()
-            var darkTheme by rememberSaveable { mutableStateOf(systemDark) }
+            // Always starts in dark mode, which suits the app's colours best.
+            // rememberSaveable keeps the user's choice when the screen rotates.
+            // (It resets when the app is closed - saving it permanently is a later improvement.)
+            var darkTheme by rememberSaveable { mutableStateOf(true) }
 
             // Keep the status bar icons readable when the app theme differs from the phone's.
             LaunchedEffect(darkTheme) {

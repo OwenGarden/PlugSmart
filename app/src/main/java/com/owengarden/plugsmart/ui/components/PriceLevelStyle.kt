@@ -16,7 +16,7 @@ data class PriceLevelStyle(
 )
 
 fun PriceLevel.style(): PriceLevelStyle = when (this) {
-    PriceLevel.CHEAP -> PriceLevelStyle(CheapGreen, Color.White, R.string.level_cheap)
+    PriceLevel.CHEAP -> PriceLevelStyle(CheapGreen, Color.Black, R.string.level_cheap)
     PriceLevel.NORMAL -> PriceLevelStyle(NormalAmber, Color.Black, R.string.level_normal)
     PriceLevel.EXPENSIVE -> PriceLevelStyle(ExpensiveRed, Color.White, R.string.level_expensive)
 }

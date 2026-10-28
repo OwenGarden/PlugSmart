@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp) // generates the Room database code
 }
 
 android {
@@ -11,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.owengarden.plugsmart"
-        minSdk = 24
+        minSdk = 26 // 26+ so java.time can be used for UK time zone handling
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -47,6 +48,16 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+
+    // Networking: Retrofit calls the Octopus API, Gson turns the JSON into Kotlin objects
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+
+    // Room: local database so the app still works offline
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

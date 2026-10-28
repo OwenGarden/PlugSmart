@@ -1,11 +1,19 @@
 package com.owengarden.plugsmart.ui.today
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,10 +23,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,7 +52,7 @@ import com.owengarden.plugsmart.ui.theme.PlugSmartTheme
 fun TodayScreen(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
-    viewModel: TodayViewModel = viewModel()
+    viewModel: TodayViewModel = viewModel(factory = TodayViewModel.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -50,7 +60,8 @@ fun TodayScreen(
         uiState = uiState,
         isDarkTheme = isDarkTheme,
         onToggleTheme = onToggleTheme,
-        onCheapOnlyChanged = viewModel::onCheapOnlyChanged
+        onCheapOnlyChanged = viewModel::onCheapOnlyChanged,
+        onRetry = viewModel::loadPrices
     )
 }
 
@@ -68,6 +79,7 @@ fun TodayContent(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
     onCheapOnlyChanged: (Boolean) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -96,58 +108,129 @@ fun TodayContent(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            uiState.currentSlot?.let { slot ->
-                item {
-                    NowCard(
-                        slot = slot,
-                        level = uiState.levelOf(slot),
-                        bestWindow = uiState.bestWindow
-                    )
-                }
-            }
+        // Nothing to show yet: a spinner while loading, or an error with a Retry button.
+        if (uiState.slots.isEmpty()) {
+            LoadingOrError(
+                isLoading = uiState.isLoading,
+                onRetry = onRetry,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            )
+        } else {
+            PriceList(uiState = uiState, onCheapOnlyChanged = onCheapOnlyChanged, innerPadding = innerPadding)
+        }
+    }
+}
+
+/** The scrolling list of cards, chart and half-hour prices. */
+@Composable
+private fun PriceList(
+    uiState: TodayUiState,
+    onCheapOnlyChanged: (Boolean) -> Unit,
+    innerPadding: PaddingValues
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            StatusLine(lastUpdated = uiState.lastUpdated, offlineDate = uiState.offlineDate)
+        }
+        uiState.currentSlot?.let { slot ->
             item {
-                BestTimeCard(
-                    window = uiState.bestWindow,
-                    savingPercent = uiState.bestWindowSavingPercent
-                )
-            }
-            item {
-                DayPriceChart(
-                    slots = uiState.slots,
-                    currentIndex = uiState.currentIndex,
-                    averagePence = uiState.averagePence
-                )
-            }
-            item {
-                ListHeader(
-                    cheapOnly = uiState.cheapOnly,
-                    onCheapOnlyChange = onCheapOnlyChanged
-                )
-            }
-            // The start time is unique within a day, so it is used as a stable key.
-            items(uiState.visibleSlots, key = { it.startTime }) { slot ->
-                PriceRow(
+                NowCard(
                     slot = slot,
                     level = uiState.levelOf(slot),
-                    isNow = slot == uiState.currentSlot
+                    bestWindow = uiState.bestWindow
                 )
             }
-            if (uiState.visibleSlots.isEmpty()) {
-                item {
-                    Text(
-                        text = stringResource(
-                            if (uiState.cheapOnly) R.string.no_cheap_left else R.string.no_slots_left
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+        }
+        item {
+            BestTimeCard(
+                window = uiState.bestWindow,
+                savingPercent = uiState.bestWindowSavingPercent
+            )
+        }
+        item {
+            DayPriceChart(
+                slots = uiState.slots,
+                currentIndex = uiState.currentIndex,
+                averagePence = uiState.averagePence
+            )
+        }
+        item {
+            ListHeader(
+                cheapOnly = uiState.cheapOnly,
+                onCheapOnlyChange = onCheapOnlyChanged
+            )
+        }
+        // The start time in milliseconds is unique, so it is used as a stable key.
+        items(uiState.visibleSlots, key = { it.startMillis }) { slot ->
+            PriceRow(
+                slot = slot,
+                level = uiState.levelOf(slot),
+                isNow = slot == uiState.currentSlot
+            )
+        }
+        if (uiState.visibleSlots.isEmpty()) {
+            item {
+                Text(
+                    text = stringResource(
+                        if (uiState.cheapOnly) R.string.no_cheap_left else R.string.no_slots_left
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+/** Shows "Updated 12:31", or an offline banner when saved prices are being used. */
+@Composable
+private fun StatusLine(lastUpdated: String?, offlineDate: String?) {
+    if (offlineDate != null) {
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
+            )
+        ) {
+            Text(
+                text = stringResource(R.string.offline_banner, offlineDate),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(12.dp)
+            )
+        }
+    } else if (lastUpdated != null) {
+        Text(
+            text = stringResource(R.string.updated_at, lastUpdated),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+/** Full-screen spinner, or an error message with a Retry button if loading failed. */
+@Composable
+private fun LoadingOrError(isLoading: Boolean, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.padding(24.dp), contentAlignment = Alignment.Center) {
+        if (isLoading) {
+            CircularProgressIndicator()
+        } else {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.error_no_data),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = onRetry) {
+                    Text(text = stringResource(R.string.retry))
                 }
             }
         }
@@ -162,6 +245,8 @@ private fun TodayContentPreview() {
     PlugSmartTheme {
         TodayContent(
             uiState = TodayUiState(
+                isLoading = false,
+                lastUpdated = "12:31",
                 slots = slots,
                 currentIndex = nowIndex,
                 averagePence = slots.map { it.pricePence }.average(),
@@ -169,7 +254,8 @@ private fun TodayContentPreview() {
             ),
             isDarkTheme = false,
             onToggleTheme = {},
-            onCheapOnlyChanged = {}
+            onCheapOnlyChanged = {},
+            onRetry = {}
         )
     }
 }

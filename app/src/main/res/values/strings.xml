@@ -5,6 +5,12 @@
     <string name="switch_to_dark">Switch to dark mode</string>
     <string name="switch_to_light">Switch to light mode</string>
 
+    <!-- Status messages -->
+    <string name="updated_at">Updated %1$s</string>
+    <string name="offline_banner">Offline – showing saved prices from %1$s as a guide</string>
+    <string name="error_no_data">Couldn\'t load prices. Check your internet connection.</string>
+    <string name="retry">Retry</string>
+
     <!-- Right now card -->
     <string name="now_label">Right now · %1$s – %2$s</string>
     <string name="per_kwh">per kWh</string>

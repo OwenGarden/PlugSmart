@@ -3,10 +3,12 @@ package com.owengarden.plugsmart.data
 import java.util.Locale
 
 /**
- * Hard-coded prices used until the app is connected to the Octopus API.
+ * Hard-coded prices, now only used for the Compose previews in Android Studio.
  * Shaped like a typical Agile day: cheap overnight, most expensive 16:00–19:00.
  */
 object FakePriceData {
+
+    private const val HALF_HOUR_MILLIS = 30 * 60 * 1000L
 
     // 48 half-hourly prices in p/kWh, starting at 00:00.
     private val prices = listOf(
@@ -21,7 +23,9 @@ object FakePriceData {
         PriceSlot(
             startTime = slotTime(index),
             endTime = slotTime(index + 1),
-            pricePence = price
+            pricePence = price,
+            startMillis = index * HALF_HOUR_MILLIS,
+            endMillis = (index + 1) * HALF_HOUR_MILLIS
         )
     }
 

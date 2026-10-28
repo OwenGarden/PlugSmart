@@ -10,3 +10,5 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+# Gson fills these classes from JSON by field name, so R8 must not rename or remove them
+-keep class com.owengarden.plugsmart.data.remote.** { *; }
