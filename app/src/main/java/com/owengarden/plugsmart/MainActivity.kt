@@ -11,12 +11,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.owengarden.plugsmart.ui.history.HistoryScreen
 import com.owengarden.plugsmart.ui.theme.PlugSmartTheme
 import com.owengarden.plugsmart.ui.today.TodayScreen
 
 /**
  * The app's single Activity. It owns the dark-mode setting (because it affects the
- * whole app) and shows the first screen. All the screen logic lives in the ui package.
+ * whole app) and sets up navigation between the screens. All the screen logic lives
+ * in the ui package.
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,10 +44,21 @@ class MainActivity : ComponentActivity() {
             }
 
             PlugSmartTheme(darkTheme = darkTheme) {
-                TodayScreen(
-                    isDarkTheme = darkTheme,
-                    onToggleTheme = { darkTheme = !darkTheme }
-                )
+                // Two screens: "today" (the start screen) and "history".
+                // The back button/gesture on History returns to Today automatically.
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "today") {
+                    composable("today") {
+                        TodayScreen(
+                            isDarkTheme = darkTheme,
+                            onToggleTheme = { darkTheme = !darkTheme },
+                            onOpenHistory = { navController.navigate("history") }
+                        )
+                    }
+                    composable("history") {
+                        HistoryScreen(onBack = { navController.popBackStack() })
+                    }
+                }
             }
         }
     }

@@ -8,6 +8,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.owengarden.plugsmart.PlugSmartApplication
 import com.owengarden.plugsmart.data.PriceRepository
+import com.owengarden.plugsmart.data.UsageRepository
+import com.owengarden.plugsmart.data.UsageSession
 import com.owengarden.plugsmart.data.findCheapestWindow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +29,8 @@ import java.time.format.DateTimeFormatter
  * so the prices aren't downloaded again every time the phone is turned.
  */
 class TodayViewModel(
-    private val repository: PriceRepository
+    private val repository: PriceRepository,
+    private val usageRepository: UsageRepository
 ) : ViewModel() {
 
     // Private and mutable: only the ViewModel can change the state.
@@ -40,6 +43,7 @@ class TodayViewModel(
 
     init {
         loadPrices()
+        loadActiveSession()
     }
 
     /** Called on start and when the user taps Retry. */
@@ -81,20 +85,61 @@ class TodayViewModel(
         }
     }
 
-    /** Called when the user flips the "only show cheap times" switch. */
-    fun onCheapOnlyChanged(enabled: Boolean) {
-        _uiState.update { it.copy(cheapOnly = enabled) }
+    /** If the power was left on when the app was closed, carry on showing it as on. */
+    private fun loadActiveSession() {
+        viewModelScope.launch {
+            val active = usageRepository.getActiveSession()
+            _uiState.update { it.copy(activeSession = active) }
+        }
+    }
+
+    /** Power button: turns the power off if it's on, otherwise asks what's being used. */
+    fun onPowerClick() {
+        val active = _uiState.value.activeSession
+        if (active != null) {
+            stopSession(active)
+        } else {
+            viewModelScope.launch {
+                val options = usageRepository.applianceOptions()
+                _uiState.update { it.copy(showStartDialog = true, applianceOptions = options) }
+            }
+        }
+    }
+
+    /** The user picked or typed what they're using and tapped Start. */
+    fun onStartSession(label: String) {
+        viewModelScope.launch {
+            val session = usageRepository.start(label)
+            _uiState.update { it.copy(activeSession = session, showStartDialog = false) }
+        }
+    }
+
+    fun onDismissStartDialog() {
+        _uiState.update { it.copy(showStartDialog = false) }
+    }
+
+    /** Saves the end time and price paid, then shows the result dialog. */
+    private fun stopSession(active: UsageSession) {
+        viewModelScope.launch {
+            val state = _uiState.value
+            val finished = usageRepository.finish(active, state.slots, state.averagePence)
+            _uiState.update { it.copy(activeSession = null, finishedSession = finished) }
+        }
+    }
+
+    fun onDismissResult() {
+        _uiState.update { it.copy(finishedSession = null) }
     }
 
     companion object {
         /**
          * Tells Compose how to build this ViewModel, because it needs the repository
-         * passed in. The repository comes from the AppContainer in PlugSmartApplication.
+         * passed in. The repositories come from the AppContainer in PlugSmartApplication.
          */
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as PlugSmartApplication
-                TodayViewModel(app.container.priceRepository)
+                TodayViewModel(app.container.priceRepository, app.container.usageRepository)
             }
         }
     }

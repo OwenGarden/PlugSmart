@@ -3,6 +3,7 @@ package com.owengarden.plugsmart.ui.today
 import com.owengarden.plugsmart.data.CheapestWindow
 import com.owengarden.plugsmart.data.PriceLevel
 import com.owengarden.plugsmart.data.PriceSlot
+import com.owengarden.plugsmart.data.UsageSession
 import com.owengarden.plugsmart.data.priceLevel
 import kotlin.math.roundToInt
 
@@ -19,19 +20,16 @@ data class TodayUiState(
     val currentIndex: Int = 0,                  // which slot "now" is in (0 = 00:00)
     val averagePence: Double = 0.0,             // today's average price
     val bestWindow: CheapestWindow? = null,     // cheapest 3 hours from now onwards
-    val cheapOnly: Boolean = false              // "only show cheap times" switch
+
+    // Power button
+    val activeSession: UsageSession? = null,    // the session running now, or null if power is off
+    val showStartDialog: Boolean = false,       // the "What are you using?" dialog
+    val applianceOptions: List<String> = emptyList(),
+    val finishedSession: UsageSession? = null   // shows the result dialog after turning off
 ) {
     /** The slot we are in right now, or null if there is no data. */
     val currentSlot: PriceSlot?
         get() = slots.getOrNull(currentIndex)
-
-    /** Slots from now until the end of the day (past slots are not useful for planning). */
-    val upcomingSlots: List<PriceSlot>
-        get() = slots.drop(currentIndex)
-
-    /** What the list shows, depending on the switch. */
-    val visibleSlots: List<PriceSlot>
-        get() = if (cheapOnly) upcomingSlots.filter { levelOf(it) == PriceLevel.CHEAP } else upcomingSlots
 
     /** How much cheaper the best window is than the day's average, e.g. 49. Null if it isn't cheaper. */
     val bestWindowSavingPercent: Int?

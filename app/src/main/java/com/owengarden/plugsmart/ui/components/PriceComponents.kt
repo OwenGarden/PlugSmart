@@ -1,7 +1,6 @@
 package com.owengarden.plugsmart.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +13,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -150,69 +148,6 @@ fun BestTimeCard(window: CheapestWindow?, savingPercent: Int?, modifier: Modifie
     }
 }
 
-/** Section title plus the switch that filters the list down to cheap slots only. */
-@Composable
-fun ListHeader(
-    cheapOnly: Boolean,
-    onCheapOnlyChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(R.string.coming_up),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.cheap_only),
-                modifier = Modifier.weight(1f)
-            )
-            Switch(checked = cheapOnly, onCheckedChange = onCheapOnlyChange)
-        }
-    }
-}
-
-/** One row in the price list: time, label and a coloured price pill. The current slot gets a border. */
-@Composable
-fun PriceRow(slot: PriceSlot, level: PriceLevel, isNow: Boolean, modifier: Modifier = Modifier) {
-    val label = stringResource(level.style().label)
-
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-        ),
-        border = if (isNow) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.time_range, slot.startTime, slot.endTime),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = if (isNow) stringResource(R.string.now_level, label) else label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (isNow) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = if (isNow) FontWeight.Bold else FontWeight.Normal
-                )
-            }
-            PricePill(pricePence = slot.pricePence, level = level)
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun NowCardPreview() {
@@ -222,13 +157,5 @@ private fun NowCardPreview() {
             level = PriceLevel.EXPENSIVE,
             bestWindow = CheapestWindow("21:00", "00:00", 15.9)
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PriceRowPreview() {
-    PlugSmartTheme {
-        PriceRow(slot = PriceSlot("02:00", "02:30", 8.2), level = PriceLevel.CHEAP, isNow = true)
     }
 }

@@ -45,3 +45,23 @@ fun priceLevel(pricePence: Double, averagePence: Double): PriceLevel = when {
     pricePence >= averagePence * 1.2 -> PriceLevel.EXPENSIVE
     else -> PriceLevel.NORMAL
 }
+
+/**
+ * The average price paid between two times, weighted by how long was spent in each half hour.
+ * For example, 10 minutes at 30p and 20 minutes at 15p averages 20p, not 22.5p.
+ * Returns null if none of the [slots] cover that time.
+ */
+fun averagePriceBetween(slots: List<PriceSlot>, startMillis: Long, endMillis: Long): Double? {
+    var weightedTotal = 0.0
+    var totalMillis = 0L
+
+    for (slot in slots) {
+        // How much of this half hour falls inside the session (negative = none).
+        val overlap = minOf(endMillis, slot.endMillis) - maxOf(startMillis, slot.startMillis)
+        if (overlap > 0) {
+            weightedTotal += slot.pricePence * overlap
+            totalMillis += overlap
+        }
+    }
+    return if (totalMillis > 0) weightedTotal / totalMillis else null
+}

@@ -12,7 +12,7 @@ import com.owengarden.plugsmart.ui.theme.NormalAmber
 data class PriceLevelStyle(
     val colour: Color,
     val onColour: Color,       // readable text colour on top of [colour]
-    @StringRes val label: Int
+    @param:StringRes val label: Int
 )
 
 fun PriceLevel.style(): PriceLevelStyle = when (this) {

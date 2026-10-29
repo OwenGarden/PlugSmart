@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -17,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,11 +36,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.owengarden.plugsmart.R
 import com.owengarden.plugsmart.data.FakePriceData
 import com.owengarden.plugsmart.data.findCheapestWindow
+import com.owengarden.plugsmart.ui.components.ActiveSessionCard
 import com.owengarden.plugsmart.ui.components.BestTimeCard
 import com.owengarden.plugsmart.ui.components.DayPriceChart
-import com.owengarden.plugsmart.ui.components.ListHeader
 import com.owengarden.plugsmart.ui.components.NowCard
-import com.owengarden.plugsmart.ui.components.PriceRow
 import com.owengarden.plugsmart.ui.theme.PlugSmartTheme
 
 /**
@@ -52,6 +51,7 @@ import com.owengarden.plugsmart.ui.theme.PlugSmartTheme
 fun TodayScreen(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
+    onOpenHistory: () -> Unit,
     viewModel: TodayViewModel = viewModel(factory = TodayViewModel.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -60,9 +60,22 @@ fun TodayScreen(
         uiState = uiState,
         isDarkTheme = isDarkTheme,
         onToggleTheme = onToggleTheme,
-        onCheapOnlyChanged = viewModel::onCheapOnlyChanged,
+        onOpenHistory = onOpenHistory,
+        onPowerClick = viewModel::onPowerClick,
         onRetry = viewModel::loadPrices
     )
+
+    // Dialogs. Whether they're showing is kept in the ViewModel, so they survive rotation.
+    if (uiState.showStartDialog) {
+        StartSessionDialog(
+            options = uiState.applianceOptions,
+            onStart = viewModel::onStartSession,
+            onDismiss = viewModel::onDismissStartDialog
+        )
+    }
+    uiState.finishedSession?.let { session ->
+        SessionResultDialog(session = session, onDismiss = viewModel::onDismissResult)
+    }
 }
 
 /**
@@ -70,7 +83,6 @@ fun TodayScreen(
  * 1. Right now   – current price and whether to plug in
  * 2. Best time   – cheapest 3 hours left today
  * 3. Chart       – the whole day at a glance
- * 4. Coming up   – list of upcoming half-hours, with a "cheap only" filter
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +90,8 @@ fun TodayContent(
     uiState: TodayUiState,
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
-    onCheapOnlyChanged: (Boolean) -> Unit,
+    onOpenHistory: () -> Unit,
+    onPowerClick: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -93,6 +106,29 @@ fun TodayContent(
                     )
                 },
                 actions = {
+                    IconButton(onClick = onOpenHistory) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_history),
+                            contentDescription = stringResource(R.string.open_history)
+                        )
+                    }
+                    // Power button: filled in the brand colour while the power is on.
+                    val powerOn = uiState.activeSession != null
+                    IconButton(
+                        onClick = onPowerClick,
+                        colors = if (powerOn) {
+                            IconButtonDefaults.filledIconButtonColors()
+                        } else {
+                            IconButtonDefaults.iconButtonColors()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_power),
+                            contentDescription = stringResource(
+                                if (powerOn) R.string.power_off else R.string.power_on
+                            )
+                        )
+                    }
                     // Shows a sun in dark mode (tap for light) and a moon in light mode (tap for dark).
                     IconButton(onClick = onToggleTheme) {
                         Icon(
@@ -118,16 +154,15 @@ fun TodayContent(
                     .padding(innerPadding)
             )
         } else {
-            PriceList(uiState = uiState, onCheapOnlyChanged = onCheapOnlyChanged, innerPadding = innerPadding)
+            PriceList(uiState = uiState, innerPadding = innerPadding)
         }
     }
 }
 
-/** The scrolling list of cards, chart and half-hour prices. */
+/** The scrolling column of cards and the chart. A LazyColumn, so it scrolls in landscape too. */
 @Composable
 private fun PriceList(
     uiState: TodayUiState,
-    onCheapOnlyChanged: (Boolean) -> Unit,
     innerPadding: PaddingValues
 ) {
     LazyColumn(
@@ -139,6 +174,11 @@ private fun PriceList(
     ) {
         item {
             StatusLine(lastUpdated = uiState.lastUpdated, offlineDate = uiState.offlineDate)
+        }
+        uiState.activeSession?.let { session ->
+            item {
+                ActiveSessionCard(session = session)
+            }
         }
         uiState.currentSlot?.let { slot ->
             item {
@@ -161,31 +201,6 @@ private fun PriceList(
                 currentIndex = uiState.currentIndex,
                 averagePence = uiState.averagePence
             )
-        }
-        item {
-            ListHeader(
-                cheapOnly = uiState.cheapOnly,
-                onCheapOnlyChange = onCheapOnlyChanged
-            )
-        }
-        // The start time in milliseconds is unique, so it is used as a stable key.
-        items(uiState.visibleSlots, key = { it.startMillis }) { slot ->
-            PriceRow(
-                slot = slot,
-                level = uiState.levelOf(slot),
-                isNow = slot == uiState.currentSlot
-            )
-        }
-        if (uiState.visibleSlots.isEmpty()) {
-            item {
-                Text(
-                    text = stringResource(
-                        if (uiState.cheapOnly) R.string.no_cheap_left else R.string.no_slots_left
-                    ),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
         }
     }
 }
@@ -254,7 +269,8 @@ private fun TodayContentPreview() {
             ),
             isDarkTheme = false,
             onToggleTheme = {},
-            onCheapOnlyChanged = {},
+            onOpenHistory = {},
+            onPowerClick = {},
             onRetry = {}
         )
     }

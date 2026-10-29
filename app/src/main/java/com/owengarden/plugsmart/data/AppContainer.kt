@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 /**
- * Creates the app's shared objects once (the API client, the database and the repository)
+ * Creates the app's shared objects once (the API client, the database and the repositories)
  * so every screen uses the same ones. This is simple manual dependency injection,
  * as used in the Android Basics with Compose course.
  */
@@ -24,7 +24,12 @@ class AppContainer(context: Context) {
         context,
         PlugSmartDatabase::class.java,
         "plugsmart.db"
-    ).build()
+    )
+        // When the database version goes up (e.g. a new table), start with a fresh database.
+        // Fine for this app: the prices are downloaded again straight away.
+        .fallbackToDestructiveMigration(dropAllTables = true)
+        .build()
 
     val priceRepository = PriceRepository(api, database.priceDao())
+    val usageRepository = UsageRepository(database.usageSessionDao())
 }

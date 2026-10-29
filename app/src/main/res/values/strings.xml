@@ -32,12 +32,40 @@
     <string name="legend_now">Now</string>
     <string name="average_today">Today\'s average: %1$.1fp/kWh</string>
 
-    <!-- List -->
-    <string name="coming_up">Coming up today</string>
-    <string name="cheap_only">Only show cheap times</string>
-    <string name="no_cheap_left">No cheap times left today</string>
-    <string name="no_slots_left">No more prices for today</string>
-    <string name="now_level">Now · %1$s</string>
+    <!-- Power button -->
+    <string name="power_on">Turn power on</string>
+    <string name="power_off">Turn power off</string>
+    <string name="open_history">Open usage history</string>
+    <string name="active_title">Power on · %1$s</string>
+    <string name="active_since">Since %1$s</string>
+    <string name="active_hint">Tap the power button when you\'ve finished.</string>
+    <string name="start_title">What are you using?</string>
+    <string name="start_custom">Something else</string>
+    <string name="start_custom_hint">e.g. Ran a bath</string>
+    <string name="start">Start</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="result_times">%1$s – %2$s · %3$s</string>
+    <string name="result_price">You paid on average %1$.1fp/kWh</string>
+    <string name="result_compared">That\'s %1$s compared with today\'s average of %2$.1fp/kWh.</string>
+    <string name="price_unknown">No prices were available for this time, so the price paid is unknown.</string>
+    <string name="level_cheap_lower">cheap</string>
+    <string name="level_normal_lower">normal</string>
+    <string name="level_expensive_lower">expensive</string>
+
+    <!-- History screen -->
+    <string name="history_title">Usage history</string>
+    <string name="back">Back</string>
+    <string name="your_average">Your average price</string>
+    <string name="your_average_details">Across %1$d sessions. On days with no cheap times, aim for this or lower.</string>
+    <string name="history_empty">No sessions yet. Tap the power button on the Today screen when you start using electricity.</string>
+    <string name="remove_entry">Remove entry</string>
+    <string name="remove_title">Remove this entry?</string>
+    <string name="remove_message">It will be removed from your history and your average.</string>
+    <string name="remove">Remove</string>
+    <string name="session_when">%1$s · %2$s – %3$s · %4$s</string>
+    <string name="duration_hours_minutes">%1$dh %2$dm</string>
+    <string name="duration_minutes">%1$dm</string>
 
     <!-- Shared -->
     <string name="time_range">%1$s – %2$s</string>
