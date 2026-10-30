@@ -1,24 +1,19 @@
 **PlugSmart**
 
-An Android app that shows the cheapest times of day to use electricity, such as charging an electric car or running the washing machine. It uses half-hourly prices from the Octopus Energy Agile API.
+Shows the cheapest times to use electricity (e.g. charging a car), using Octopus Energy Agile prices for North Scotland.
 
-Developer: Owen Garden
-
-Student ID: 2309802
-
-Module: CM3147 Native Mobile Apps
-
-Branch for marking: main
+Owen Garden – 2309802 · CM3147 Native Mobile Apps · Marking branch: main
 
 **Documentation**
-- design.md - App description and design
-- security-review.md - Privacy and security review (to do)
-- tool-review.md - Tool review and reflection (to do)
 
+- design.md
+- security-review.md
+- tool-review.md
+
+  
 **How to run**
-- Clone this repository and open it in Android Studio.
-- Let Gradle sync.
-- Run the app configuration on an emulator or device (internet connection needed for live prices).
+
+Open in Android Studio, let Gradle sync, and run app on an emulator. Internet is needed on first launch.
 
 **Generative AI usage statement**
 
@@ -26,5 +21,5 @@ I acknowledge use of Claude (Anthropic) from https://claude.ai to help me comple
 
 - To help me generate ideas and/or potential topics for my assessment.
 - To help me create a structured outline for my assessment.
-- To help setting up the Android Studio project and ensuring I was able to commit and push to GitHub
-- I created fake price data for testing, and with the help of Claude scoped out the design of the app, and generated the code for the Today screen, colour theme and dark mode toggle.
+- To help ensure my documentation stays concise to meet word count limits.
+- To help in the following ways not covered by the above: setting up Android Studio and Git, generating parts of code for the UI, API and Room data layer, power button and history, and WorkManager sync and debugging errors I had.
