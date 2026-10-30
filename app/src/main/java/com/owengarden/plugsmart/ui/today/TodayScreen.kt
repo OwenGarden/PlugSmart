@@ -173,7 +173,11 @@ private fun PriceList(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            StatusLine(lastUpdated = uiState.lastUpdated, offlineDate = uiState.offlineDate)
+            StatusLine(
+                lastUpdated = uiState.lastUpdated,
+                isOffline = uiState.isOffline,
+                offlineDate = uiState.offlineDate
+            )
         }
         uiState.activeSession?.let { session ->
             item {
@@ -205,10 +209,13 @@ private fun PriceList(
     }
 }
 
-/** Shows "Updated 12:31", or an offline banner when saved prices are being used. */
+/**
+ * Shows "Updated 12:31" when online. When offline it shows a banner saying whether
+ * these are today's saved prices or an older day being used as a guide.
+ */
 @Composable
-private fun StatusLine(lastUpdated: String?, offlineDate: String?) {
-    if (offlineDate != null) {
+private fun StatusLine(lastUpdated: String?, isOffline: Boolean, offlineDate: String?) {
+    if (isOffline) {
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
@@ -216,7 +223,11 @@ private fun StatusLine(lastUpdated: String?, offlineDate: String?) {
             )
         ) {
             Text(
-                text = stringResource(R.string.offline_banner, offlineDate),
+                text = if (offlineDate != null) {
+                    stringResource(R.string.offline_banner, offlineDate)
+                } else {
+                    stringResource(R.string.offline_today)
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(12.dp)
             )

@@ -15,7 +15,8 @@ data class TodayUiState(
     val isLoading: Boolean = true,              // true while prices are being fetched
     val hasError: Boolean = false,              // true if nothing could be loaded at all
     val lastUpdated: String? = null,            // e.g. "12:31", when the prices were downloaded
-    val offlineDate: String? = null,            // e.g. "Tue 27 Oct" when showing saved prices
+    val isOffline: Boolean = false,             // true when showing saved prices (no internet)
+    val offlineDate: String? = null,            // e.g. "Tue 27 Oct" when an older day is used as a guide
     val slots: List<PriceSlot> = emptyList(),   // all of today's half-hour slots
     val currentIndex: Int = 0,                  // which slot "now" is in (0 = 00:00)
     val averagePence: Double = 0.0,             // today's average price

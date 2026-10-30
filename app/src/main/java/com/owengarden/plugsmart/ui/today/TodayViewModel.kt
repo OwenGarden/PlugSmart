@@ -70,9 +70,10 @@ class TodayViewModel(
                         // Only look at slots from now onwards - a cheap time that has passed is no use.
                         // 6 slots x 30 minutes = 3 hours.
                         bestWindow = findCheapestWindow(slots.drop(nowIndex), slotCount = 6),
-                        lastUpdated = if (result.isFromCache) null
+                        lastUpdated = if (result.isOffline) null
                             else LocalTime.now(ukZone).format(DateTimeFormatter.ofPattern("HH:mm")),
-                        offlineDate = result.savedDate?.format(DateTimeFormatter.ofPattern("EEE d MMM"))
+                        isOffline = result.isOffline,
+                        offlineDate = result.guessFromDate?.format(DateTimeFormatter.ofPattern("EEE d MMM"))
                     )
                 }
             } catch (e: IOException) {

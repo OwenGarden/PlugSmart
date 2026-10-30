@@ -52,6 +52,9 @@ dependencies {
     // Navigation between the Today and History screens
     implementation(libs.androidx.navigation.compose)
 
+    // WorkManager: downloads prices in the background once a day
+    implementation(libs.androidx.work.runtime.ktx)
+
     // Networking: Retrofit calls the Octopus API, Gson turns the JSON into Kotlin objects
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
