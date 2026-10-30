@@ -4,7 +4,7 @@
 
 - **Developer:** Owen Garden – 2309802
 - **App Title:** PlugSmart
-- - **Purpose:** Agile electricity prices change every half hour, so it's hard to know when to run appliances. PlugSmart shows the cheapest times and tracks what users paid, helping them save money and shift use to off-peak hours, when the grid is often greener. Supports [UN SDG 7 (Affordable and Clean Energy)](https://sdgs.un.org/goals/goal7).
+- **Purpose:** Agile electricity prices change every half hour, so it's hard to know when to run appliances. PlugSmart shows the cheapest times and tracks what users paid, helping them save money and shift use to off-peak hours, when the grid is often greener. Supports [UN SDG 7 (Affordable and Clean Energy)](https://sdgs.un.org/goals/goal7).
 
 **Core functionalities**
 
