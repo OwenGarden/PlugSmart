@@ -6,10 +6,9 @@ Owen Garden – 2309802 · CM3147 Native Mobile Apps · Marking branch: main
 
 **Documentation**
 
-- design.md
-- security-review.md
-- tool-review.md
-
+- [design.md](design.md)
+- [security-review.md](security-review.md)
+- [tool-review.md](tool-review.md)
   
 **How to run**
 
