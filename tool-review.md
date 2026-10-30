@@ -2,7 +2,7 @@
 
 ## Tools used
 
-- **Android Studio:**
+- **Android Studio**
 - **Emulator:** testing rotation, airplane mode (offline) and changing the date to test the background sync.
 - **Git and GitHub:** I learnt to run `git pull --rebase` after a push was rejected because I had edited the README on GitHub.
 - **Claude (generative AI):** brainstorming, generating code, debugging and keeping the documentation concise.
