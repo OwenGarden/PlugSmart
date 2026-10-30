@@ -18,7 +18,7 @@ The key design decisions were mine. I rejected suggestions that added complexity
 
 ## Third-party code
 
-- **Octopus Energy API docs** for the endpoint and JSON format.
+- **Octopus Energy API docs** for the endpoint and JSON format. Times are in UTC and listed newest first, so they had to be converted to UK time and sorted.
 - **Android Basics with Compose** patterns (`AppContainer`, ViewModel `Factory`).
 - **Google Material Icons** (Apache 2.0), cited in each icon file.
 
